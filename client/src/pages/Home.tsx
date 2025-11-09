@@ -190,11 +190,54 @@ export default function Home() {
   };
 
   const handleGetDirections = (id: string) => {
-    console.log("Get directions to:", id);
+    const center = reliefCenters.find((c) => c.id === id);
+    if (!center) return;
+
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const destination = encodeURIComponent(center.address);
+    
+    const mapsUrl = isIOS
+      ? `maps://maps.apple.com/?daddr=${destination}&dirflg=d`
+      : `https://www.google.com/maps/dir/?api=1&destination=${center.latitude},${center.longitude}`;
+
+    window.open(mapsUrl, "_blank");
   };
 
-  const handleShare = (id: string) => {
-    console.log("Share resource:", id);
+  const handleShare = async (id: string) => {
+    const center = reliefCenters.find((c) => c.id === id);
+    if (!center) return;
+
+    const shareUrl = `${window.location.origin}${window.location.pathname}?location=${encodeURIComponent(center.address)}&resource=${id}`;
+    const shareText = `${center.name} - ${center.address}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: center.name,
+          text: shareText,
+          url: shareUrl,
+        });
+      } catch (error) {
+        if ((error as Error).name !== "AbortError") {
+          console.error("Error sharing:", error);
+        }
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        toast({
+          title: "Link copied",
+          description: "Location link copied to clipboard",
+        });
+      } catch (error) {
+        console.error("Error copying to clipboard:", error);
+        toast({
+          title: "Could not copy",
+          description: "Please copy the URL manually from the address bar",
+          variant: "destructive",
+        });
+      }
+    }
   };
 
   const handleMarkerClick = (id: string) => {
