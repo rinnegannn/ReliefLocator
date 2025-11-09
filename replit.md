@@ -12,8 +12,15 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### November 9, 2025 - Additional Fixes for Guelph Support and Refresh
+**Latest Fixes:**
+1. **Guelph Area Support** - Added 8 Guelph relief centers to seed data (now 26 total: 18 Toronto + 8 Guelph)
+2. **Province-Wide Geocoding** - Changed Nominatim search from "Toronto, Canada" to "Ontario, Canada" to support all Ontario postal codes
+3. **Refresh Timestamp Fix** - Changed "Last updated" to show actual data fetch time instead of database timestamp, now updates correctly when refresh is clicked
+4. **Shared Links Fixed** - With Guelph data added, shared coordinate URLs now properly display resources instead of showing 0 results
+
 ### November 9, 2025 - Bug Fixes and Map Integration
-**Fixed Issues:**
+**Previous Fixes:**
 1. **Postal Code Search** - Expanded lookup table from 8 to 100+ Toronto postal codes, added Nominatim OpenStreetMap API fallback with 24hr caching and 1-second rate limiting
 2. **Get Directions** - Implemented to open Google Maps (Apple Maps on iOS) with resource coordinates in new tab
 3. **Share Functionality** - Implemented with navigator.share API and clipboard fallback, generates shareable URLs with lat/lng query parameters
@@ -30,6 +37,7 @@ Preferred communication style: Simple, everyday language.
 - Nominatim geocoding rate limiting is basic (1 request/second) - may need enhancement for high-traffic disaster scenarios
 - Map markers could benefit from enhanced keyboard navigation and screen reader support for full accessibility compliance
 - Geocode cache is in-memory only - resets on server restart (consider persistent storage for production)
+- Relief center coverage limited to Toronto and Guelph areas - additional Ontario cities can be added as needed
 
 ## System Architecture
 
