@@ -44,30 +44,17 @@ if %ERRORLEVEL% EQU 0 (
 )
 echo.
 
-REM Check for required environment variables
-echo Checking environment variables...
-set MISSING_VARS=0
-
+REM Check database configuration
+echo Checking database configuration...
 if "%DATABASE_URL%"=="" (
-    echo [WARNING] Missing: DATABASE_URL
-    set MISSING_VARS=1
-)
-
-if "%SESSION_SECRET%"=="" (
-    echo [WARNING] Missing: SESSION_SECRET
-    set MISSING_VARS=1
-)
-
-if %MISSING_VARS% EQU 1 (
+    echo [OK] Using SQLite for local development
+    echo   Database file: ./dev.db (auto-created on first run)
+    echo   34 relief centers will be seeded automatically
     echo.
-    echo Please set these environment variables before running the application.
+    echo [INFO] For production: Set DATABASE_URL to use PostgreSQL/Neon
 ) else (
-    echo [OK] All required environment variables are set
-)
-echo.
-
-REM Setup database
-if not "%DATABASE_URL%"=="" (
+    echo [OK] Using PostgreSQL database (from DATABASE_URL)
+    
     echo Setting up database schema...
     call npm run db:push
     
@@ -77,8 +64,17 @@ if not "%DATABASE_URL%"=="" (
         echo [ERROR] Failed to create database schema
         exit /b 1
     )
+)
+echo.
+
+REM Check for SESSION_SECRET
+echo Checking session configuration...
+if "%SESSION_SECRET%"=="" (
+    echo [WARNING] SESSION_SECRET not set
+    echo   A random secret will be generated (sessions won't persist across restarts)
+    echo   For production: Set SESSION_SECRET to a secure random string
 ) else (
-    echo [WARNING] Skipping database setup (DATABASE_URL not set)
+    echo [OK] SESSION_SECRET is configured
 )
 echo.
 
@@ -102,15 +98,22 @@ echo Installed packages:
 echo   - Frontend: React 18, Vite, Wouter, TanStack Query
 echo   - UI: Radix UI, Shadcn/ui, Tailwind CSS
 echo   - Maps: Leaflet with OpenStreetMap
-echo   - Backend: Express, Drizzle ORM, PostgreSQL
-echo   - 80+ total packages
+echo   - Backend: Express, Drizzle ORM
+echo   - Database: SQLite (local) + PostgreSQL (production)
+echo   - 85+ total packages
 echo.
-echo Next steps:
-echo   1. Make sure environment variables are set
-echo   2. Run 'npm run dev' to start the development server
-echo   3. Open the application in your browser
+echo Quick Start:
+echo   1. Run 'npm run dev' to start the development server
+echo   2. Open http://localhost:5000 in your browser
+echo   3. The app will auto-create ./dev.db and seed 34 relief centers
 echo.
-echo For more information, see dependencies.md
+echo Production Deployment:
+echo   - Set DATABASE_URL to your PostgreSQL/Neon connection string
+echo   - Set SESSION_SECRET to a secure random string
+echo   - Run 'npm run db:push' to create tables
+echo   - Run 'npm start' for production mode
+echo.
+echo For more information, see dependencies.md and README.md
 echo.
 
 pause

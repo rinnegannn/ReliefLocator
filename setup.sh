@@ -53,33 +53,17 @@ else
 fi
 echo ""
 
-# Check for required environment variables
-echo "Checking environment variables..."
-MISSING_VARS=()
-
+# Check database configuration
+echo "Checking database configuration..."
 if [ -z "$DATABASE_URL" ]; then
-    MISSING_VARS+=("DATABASE_URL")
-fi
-
-if [ -z "$SESSION_SECRET" ]; then
-    MISSING_VARS+=("SESSION_SECRET")
-fi
-
-if [ ${#MISSING_VARS[@]} -gt 0 ]; then
-    echo -e "${YELLOW}⚠ Missing environment variables:${NC}"
-    for var in "${MISSING_VARS[@]}"; do
-        echo "  - $var"
-    done
+    echo -e "${GREEN}✓ Using SQLite for local development${NC}"
+    echo "  Database file: ./dev.db (auto-created on first run)"
+    echo "  34 relief centers will be seeded automatically"
     echo ""
-    echo "Please set these environment variables before running the application."
-    echo "In Replit, you can add them in the Secrets tab (Tools > Secrets)"
+    echo -e "${YELLOW}ℹ For production: Set DATABASE_URL to use PostgreSQL/Neon${NC}"
 else
-    echo -e "${GREEN}✓ All required environment variables are set${NC}"
-fi
-echo ""
-
-# Setup database
-if [ -n "$DATABASE_URL" ]; then
+    echo -e "${GREEN}✓ Using PostgreSQL database (from DATABASE_URL)${NC}"
+    
     echo "Setting up database schema..."
     npm run db:push
     
@@ -89,8 +73,17 @@ if [ -n "$DATABASE_URL" ]; then
         echo -e "${RED}✗ Failed to create database schema${NC}"
         exit 1
     fi
+fi
+echo ""
+
+# Check for SESSION_SECRET
+echo "Checking session configuration..."
+if [ -z "$SESSION_SECRET" ]; then
+    echo -e "${YELLOW}⚠ SESSION_SECRET not set${NC}"
+    echo "  A random secret will be generated (sessions won't persist across restarts)"
+    echo "  For production: Set SESSION_SECRET to a secure random string"
 else
-    echo -e "${YELLOW}⚠ Skipping database setup (DATABASE_URL not set)${NC}"
+    echo -e "${GREEN}✓ SESSION_SECRET is configured${NC}"
 fi
 echo ""
 
@@ -114,18 +107,20 @@ echo "Installed packages:"
 echo "  - Frontend: React 18, Vite, Wouter, TanStack Query"
 echo "  - UI: Radix UI, Shadcn/ui, Tailwind CSS"
 echo "  - Maps: Leaflet with OpenStreetMap"
-echo "  - Backend: Express, Drizzle ORM, PostgreSQL"
-echo "  - 80+ total packages"
+echo "  - Backend: Express, Drizzle ORM"
+echo "  - Database: SQLite (local) + PostgreSQL (production)"
+echo "  - 85+ total packages"
 echo ""
-echo "Next steps:"
-echo "  1. Make sure environment variables are set:"
-if [ ${#MISSING_VARS[@]} -gt 0 ]; then
-    for var in "${MISSING_VARS[@]}"; do
-        echo "     - $var"
-    done
-fi
-echo "  2. Run 'npm run dev' to start the development server"
-echo "  3. Open the application in your browser"
+echo "Quick Start:"
+echo "  1. Run 'npm run dev' to start the development server"
+echo "  2. Open http://localhost:5000 in your browser"
+echo "  3. The app will auto-create ./dev.db and seed 34 relief centers"
 echo ""
-echo "For more information, see dependencies.md"
+echo "Production Deployment:"
+echo "  - Set DATABASE_URL to your PostgreSQL/Neon connection string"
+echo "  - Set SESSION_SECRET to a secure random string"
+echo "  - Run 'npm run db:push' to create tables"
+echo "  - Run 'npm start' for production mode"
+echo ""
+echo "For more information, see dependencies.md and README.md"
 echo ""

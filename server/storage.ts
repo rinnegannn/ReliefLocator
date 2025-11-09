@@ -1,6 +1,8 @@
-import { type User, type InsertUser, type ReliefCenter, type InsertReliefCenter, users, reliefCenters } from "@shared/schema";
-import { db } from "./db";
+import { type User, type InsertUser, type ReliefCenter, type InsertReliefCenter } from "@shared/schema";
+import { db, schema } from "./db";
 import { eq, sql } from "drizzle-orm";
+
+const { users, reliefCenters } = schema;
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -39,7 +41,7 @@ export class DatabaseStorage implements IStorage {
   async getReliefCentersNearby(latitude: number, longitude: number, radiusKm: number): Promise<ReliefCenter[]> {
     const results = await db.select().from(reliefCenters);
     
-    return results.filter(center => {
+    return results.filter((center: ReliefCenter) => {
       const distance = this.calculateDistance(
         latitude,
         longitude,
