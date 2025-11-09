@@ -142,7 +142,7 @@ export default function MapView({
   };
 
   return (
-    <div className="relative w-full h-[600px] md:h-[700px] lg:h-[800px] rounded-md overflow-hidden border border-border" data-testid="map-view">
+    <div className="relative w-full h-full rounded-md overflow-hidden border border-border" data-testid="map-view">
       <div ref={mapContainerRef} className="w-full h-full" />
 
       {onRecenter && (

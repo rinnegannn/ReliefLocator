@@ -291,7 +291,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-screen overflow-hidden bg-background flex flex-col">
       <EmergencyAlertBanner
         message="Evacuation order in effect for downtown area. Seek shelter immediately at designated evacuation centers."
         timestamp="Updated 15 minutes ago"
@@ -300,7 +300,7 @@ export default function Home() {
 
       {isOffline && <OfflineIndicator />}
 
-      <header className="sticky top-0 z-10 bg-background border-b border-border shadow-sm">
+      <header className="flex-shrink-0 bg-background border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-5 space-y-5">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div>
@@ -332,23 +332,25 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 md:px-6 py-6">
-        <div className="grid lg:grid-cols-[1.5fr_1fr] gap-6">
-          <div className="order-2 lg:order-1">
-            <MapView
-              markers={mapMarkers}
-              onMarkerClick={handleMarkerClick}
-              userLocation={coordinates || undefined}
-              onRecenter={() => coordinates && setCoordinates({ ...coordinates })}
-            />
-          </div>
+      <main className="flex-1 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 h-full">
+          <div className="grid lg:grid-cols-[1.5fr_1fr] gap-6 h-full">
+            <div className="order-2 lg:order-1 h-full">
+              <MapView
+                markers={mapMarkers}
+                onMarkerClick={handleMarkerClick}
+                userLocation={coordinates || undefined}
+                onRecenter={() => coordinates && setCoordinates({ ...coordinates })}
+              />
+            </div>
 
-          <div className="order-1 lg:order-2 overflow-auto max-h-[800px]">
-            <ResourceList
-              resources={filteredResources}
-              onGetDirections={handleGetDirections}
-              onShare={handleShare}
-            />
+            <div className="order-1 lg:order-2 overflow-auto h-full">
+              <ResourceList
+                resources={filteredResources}
+                onGetDirections={handleGetDirections}
+                onShare={handleShare}
+              />
+            </div>
           </div>
         </div>
       </main>
