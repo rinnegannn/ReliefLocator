@@ -166,14 +166,91 @@ const torontoReliefCenters: InsertReliefCenter[] = [
   },
 ];
 
+const guelphReliefCenters: InsertReliefCenter[] = [
+  {
+    name: "University of Guelph Emergency Shelter",
+    type: "shelter",
+    latitude: 43.5321,
+    longitude: -80.2258,
+    address: "50 Stone Rd E, Guelph, ON N1G 2W1",
+    phone: "(519) 824-4120",
+    hours: "Open 24/7",
+  },
+  {
+    name: "Guelph City Hall Emergency Center",
+    type: "shelter",
+    latitude: 43.5448,
+    longitude: -80.2482,
+    address: "1 Carden St, Guelph, ON N1H 3A1",
+    phone: "(519) 822-1260",
+    hours: "Open 24/7",
+  },
+  {
+    name: "Guelph Food Bank",
+    type: "food",
+    latitude: 43.5460,
+    longitude: -80.2493,
+    address: "100 Crimea St, Guelph, ON N1H 2Y6",
+    phone: "(519) 763-3663",
+    hours: "Mon-Fri: 9AM-4PM",
+  },
+  {
+    name: "Chalmers Community Services Centre Food Bank",
+    type: "food",
+    latitude: 43.5390,
+    longitude: -80.2561,
+    address: "97 Yarmouth St, Guelph, ON N1H 4G3",
+    phone: "(519) 824-3773",
+    hours: "Tue, Thu: 10AM-2PM",
+  },
+  {
+    name: "Guelph General Hospital",
+    type: "medical",
+    latitude: 43.5526,
+    longitude: -80.2336,
+    address: "115 Delhi St, Guelph, ON N1E 4J4",
+    phone: "(519) 822-5350",
+    hours: "Open 24/7",
+  },
+  {
+    name: "St. Joseph's Health Centre Guelph",
+    type: "medical",
+    latitude: 43.5284,
+    longitude: -80.2418,
+    address: "100 Westmount Rd, Guelph, ON N1H 5H8",
+    phone: "(519) 824-6000",
+    hours: "Open 24/7",
+  },
+  {
+    name: "Exhibition Park Emergency Water Station",
+    type: "water",
+    latitude: 43.5412,
+    longitude: -80.2367,
+    address: "Victoria Rd S, Guelph, ON N1E 6T8",
+    phone: "(519) 822-1260",
+    hours: "Daily: 8AM-8PM",
+  },
+  {
+    name: "Riverside Park Water Distribution",
+    type: "water",
+    latitude: 43.5388,
+    longitude: -80.2619,
+    address: "355 Woolwich St, Guelph, ON N1H 3W6",
+    phone: "(519) 822-1260",
+    hours: "Daily: 8AM-8PM",
+  },
+];
+
+const allReliefCenters = [...torontoReliefCenters, ...guelphReliefCenters];
+
 export async function seedDatabase() {
   try {
     const existingCenters = await storage.getReliefCenters();
     
     if (existingCenters.length === 0) {
       console.log("Seeding database with relief centers...");
-      await storage.seedReliefCenters(torontoReliefCenters);
-      console.log(`Successfully seeded ${torontoReliefCenters.length} relief centers`);
+      await storage.seedReliefCenters(allReliefCenters);
+      console.log(`Successfully seeded ${allReliefCenters.length} relief centers`);
     } else {
       console.log(`Database already contains ${existingCenters.length} relief centers`);
     }
