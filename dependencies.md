@@ -356,8 +356,35 @@ None currently required for core functionality.
 
 ## Installation
 
-### Package Manager
+### Quick Setup (Recommended)
+
+**Automated installation script that handles everything:**
+
+**Linux/Mac:**
 ```bash
+chmod +x setup.sh
+./setup.sh
+```
+
+**Windows:**
+```cmd
+setup.bat
+```
+
+The setup script will:
+- ✓ Check Node.js installation
+- ✓ Install all npm dependencies
+- ✓ Verify environment variables
+- ✓ Setup database schema
+- ✓ Run type checking
+- ✓ Provide next steps
+
+### Manual Installation
+
+If you prefer to install manually:
+
+```bash
+# Install dependencies
 npm install
 ```
 

@@ -12,6 +12,23 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### November 9, 2025 - Installation Scripts and Documentation
+**Latest Updates:**
+1. **Automated Setup Scripts** - Created installation scripts for easy project setup
+   - `setup.sh` for Linux/Mac with colored output and progress indicators
+   - `setup.bat` for Windows with error handling
+   - Scripts check Node.js, install dependencies, verify environment variables, and setup database
+2. **Dependencies Documentation** - Created comprehensive `dependencies.md` file
+   - Documents all 80+ npm packages with their purposes
+   - External services (OpenStreetMap, Nominatim) with usage details
+   - Installation instructions and environment variables
+   - Performance optimizations and caching strategies
+   - Browser compatibility and known limitations
+3. **Viewport Layout Fix** - Removed page-level scrolling, only resource list scrolls
+   - Page now fits perfectly in viewport (h-screen overflow-hidden)
+   - Single scroll bar in resource list only
+   - Dynamic height adaptation for map and content
+
 ### November 9, 2025 - UI Redesign and Hamilton Support
 **Latest Updates:**
 1. **Hamilton Coverage** - Added 8 Hamilton relief centers to seed data (now 34 total: 18 Toronto + 8 Guelph + 8 Hamilton)
