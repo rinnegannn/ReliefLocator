@@ -1,0 +1,35 @@
+name: Run ReliefLocator App
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run ReliefLocator with environment secrets
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        PGHOST: ${{ secrets.PGHOST }}
+        PGDATABASE: ${{ secrets.PGDATABASE }}
+        PGUSER: ${{ secrets.PGUSER }}
+        PGPASSWORD: ${{ secrets.PGPASSWORD }}
+        PGPORT: ${{ secrets.PGPORT }}
+        SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+      run: |
+        echo "Starting ReliefLocator..."
+        npm run start
