@@ -35,6 +35,7 @@ export default function Home() {
   const [isOffline, setIsOffline] = useState(false);
   const [currentLocation, setCurrentLocation] = useState("M5H 2N2");
   const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
+  const [lastFetchTime, setLastFetchTime] = useState<Date>(new Date());
   const { toast } = useToast();
 
   const { data: reliefCenters = [], refetch, isLoading } = useQuery<ReliefCenter[]>({
@@ -48,12 +49,14 @@ export default function Home() {
         const response = await fetch(url);
         const data = await response.json();
         
+        const fetchTime = new Date();
         localStorage.setItem("cached-relief-centers", JSON.stringify({
           data,
-          timestamp: new Date().toISOString(),
+          timestamp: fetchTime.toISOString(),
           coordinates,
         }));
         
+        setLastFetchTime(fetchTime);
         setIsOffline(false);
         return data;
       } catch (error) {
@@ -321,13 +324,7 @@ export default function Home() {
               counts={filterCounts}
             />
             <LastUpdatedIndicator
-              lastUpdated={
-                reliefCenters.length > 0
-                  ? formatLastUpdated(reliefCenters[0].lastUpdated)
-                  : localStorage.getItem("cached-relief-centers")
-                  ? formatLastUpdated(JSON.parse(localStorage.getItem("cached-relief-centers")!).timestamp)
-                  : "Never"
-              }
+              lastUpdated={formatLastUpdated(lastFetchTime.toISOString())}
               onRefresh={handleRefresh}
               isRefreshing={isRefreshing}
             />
