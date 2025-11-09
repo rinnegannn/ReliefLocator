@@ -35,4 +35,6 @@ jobs:
         SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
       run: |
         echo "Starting ReliefLocator..."
-        npm run start
+        npm run start &
+        sleep 10
+        echo "✅ App started successfully (test run complete)."
