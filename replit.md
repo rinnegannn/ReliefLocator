@@ -12,11 +12,31 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### November 9, 2025 - UI Redesign and Hamilton Support
+**Latest Updates:**
+1. **Hamilton Coverage** - Added 8 Hamilton relief centers to seed data (now 34 total: 18 Toronto + 8 Guelph + 8 Hamilton)
+   - FirstOntario Centre Emergency Shelter
+   - Hamilton General Hospital and St. Joseph's Healthcare
+   - Hamilton Food Share and Good Shepherd Centre Food Bank
+   - Bayfront Park and Gage Park water stations
+2. **UI Redesign with Blue Theme** - Complete visual refresh for professional emergency response aesthetic
+   - Changed from red/orange to calming blue color scheme (HSL 207, 76%, 48%)
+   - Blue primary buttons and accents throughout interface
+   - Emergency red reserved for critical alerts only
+3. **Enhanced Component Styling**
+   - Header: Added subtle shadow, increased padding for better visual hierarchy
+   - Resource Cards: Enhanced with shadow-md, improved spacing and gaps
+   - Icons: Changed to primary blue for better visibility and consistency
+   - Distance Display: Larger, bold blue text for quick scanning
+   - Content Dividers: Added border before "Last updated" for visual separation
+   - Buttons: Improved spacing and minimum widths for better touch targets
+4. **Updated Design Guidelines** - Generated comprehensive design_guidelines.md with Material Design principles for emergency response applications
+
 ### November 9, 2025 - Global Location Support and Address Fixes
-**Latest Enhancements:**
+**Previous Enhancements:**
 1. **Global Location Search** - Removed geographic restrictions from Nominatim geocoding, now supports any location worldwide (Hamilton, Miami, Paris, etc.)
 2. **Get Directions Address Fix** - Fixed Google Maps to use the exact address displayed on the website instead of coordinates
-3. **Guelph Area Support** - Added 8 Guelph relief centers to seed data (now 26 total: 18 Toronto + 8 Guelph)
+3. **Guelph Area Support** - Added 8 Guelph relief centers to seed data
 4. **Refresh Timestamp Fix** - Changed "Last updated" to show actual data fetch time instead of database timestamp, now updates correctly when refresh is clicked
 5. **Shared Links Fixed** - Shared coordinate URLs now properly display resources instead of showing 0 results
 
@@ -38,7 +58,7 @@ Preferred communication style: Simple, everyday language.
 - Nominatim geocoding rate limiting is basic (1 request/second) - may need enhancement for high-traffic disaster scenarios
 - Map markers could benefit from enhanced keyboard navigation and screen reader support for full accessibility compliance
 - Geocode cache is in-memory only - resets on server restart (consider persistent storage for production)
-- Relief center coverage limited to Toronto and Guelph areas - additional Ontario cities can be added as needed
+- Relief center coverage limited to Toronto, Guelph, and Hamilton - additional cities can be added as needed
 
 ## System Architecture
 
@@ -54,6 +74,8 @@ Preferred communication style: Simple, everyday language.
 - Shadcn/ui design system with the "new-york" style variant
 - Tailwind CSS for utility-first styling with custom design tokens
 - Material Design principles adapted for emergency response interfaces
+- Calming blue color scheme (HSL 207, 76%, 48%) for trust and professionalism
+- Shadow-based depth system for visual hierarchy (shadow-sm for headers, shadow-md for cards)
 
 **State Management**
 - TanStack Query (React Query) for server state management and caching
