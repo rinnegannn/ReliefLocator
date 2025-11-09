@@ -58,12 +58,18 @@ export default function MapView({
       ? [userLocation.lat, userLocation.lng]
       : [43.6532, -79.3832];
 
-    const map = L.map(mapContainerRef.current).setView(defaultCenter, 12);
+    const map = L.map(mapContainerRef.current, {
+      minZoom: 3,
+      maxBounds: [[-85, -180], [85, 180]],
+      maxBoundsViscosity: 1.0,
+    }).setView(defaultCenter, 12);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution:
         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       maxZoom: 19,
+      minZoom: 3,
+      bounds: [[-85, -180], [85, 180]],
     }).addTo(map);
 
     mapRef.current = map;
@@ -136,8 +142,8 @@ export default function MapView({
   };
 
   return (
-    <div className="relative w-full h-full min-h-[500px] rounded-md overflow-hidden" data-testid="map-view">
-      <div ref={mapContainerRef} className="w-full h-full min-h-[500px]" />
+    <div className="relative w-full h-[600px] md:h-[700px] lg:h-[800px] rounded-md overflow-hidden border border-border" data-testid="map-view">
+      <div ref={mapContainerRef} className="w-full h-full" />
 
       {onRecenter && (
         <Button

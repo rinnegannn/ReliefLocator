@@ -285,4 +285,14 @@
   .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
     inset: -1px;
   }
+
+  /* Force Leaflet map to stay within its container */
+  .leaflet-container {
+    overflow: hidden !important;
+    contain: paint !important;
+  }
+  
+  .leaflet-pane {
+    overflow: hidden !important;
+  }
 }
