@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import EmergencyAlertBanner from "@/components/EmergencyAlertBanner";
 import SearchLocationInput from "@/components/SearchLocationInput";
 import FilterControls, { ResourceType } from "@/components/FilterControls";
@@ -7,6 +8,21 @@ import ResourceList, { Resource } from "@/components/ResourceList";
 import LastUpdatedIndicator from "@/components/LastUpdatedIndicator";
 import ShareLocationButton from "@/components/ShareLocationButton";
 import OfflineIndicator from "@/components/OfflineIndicator";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+
+interface ReliefCenter {
+  id: string;
+  name: string;
+  type: ResourceType;
+  address: string;
+  phone: string | null;
+  hours: string | null;
+  latitude: number;
+  longitude: number;
+  lastUpdated: string;
+  distance?: number;
+}
 
 export default function Home() {
   const [activeFilters, setActiveFilters] = useState<ResourceType[]>([
@@ -16,79 +32,102 @@ export default function Home() {
     "water",
   ]);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isOffline] = useState(false);
+  const [isOffline, setIsOffline] = useState(false);
   const [currentLocation, setCurrentLocation] = useState("M5H 2N2");
+  const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
+  const { toast } = useToast();
 
-  const mockResources: Resource[] = [
-    {
-      id: "1",
-      name: "Metro Toronto Convention Centre Emergency Shelter",
-      type: "shelter",
-      address: "255 Front St W, Toronto, ON M5V 2W6",
-      phone: "(416) 585-8000",
-      hours: "Open 24/7",
-      distance: 2.3,
-      lastUpdated: "5 minutes ago",
+  const { data: reliefCenters = [], refetch, isLoading } = useQuery<ReliefCenter[]>({
+    queryKey: ["/api/relief-centers", coordinates],
+    enabled: !!coordinates,
+    queryFn: async () => {
+      if (!coordinates) return [];
+      const url = `/api/relief-centers?lat=${coordinates.lat}&lng=${coordinates.lng}&radius=25`;
+      
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        localStorage.setItem("cached-relief-centers", JSON.stringify({
+          data,
+          timestamp: new Date().toISOString(),
+          coordinates,
+        }));
+        
+        setIsOffline(false);
+        return data;
+      } catch (error) {
+        console.error("Failed to fetch relief centers, using cache:", error);
+        
+        const cached = localStorage.getItem("cached-relief-centers");
+        if (cached) {
+          const { data } = JSON.parse(cached);
+          setIsOffline(true);
+          return data;
+        }
+        
+        setIsOffline(true);
+        throw error;
+      }
     },
-    {
-      id: "2",
-      name: "Daily Bread Food Bank",
-      type: "food",
-      address: "191 New Toronto St, Toronto, ON M8V 2E7",
-      phone: "(416) 203-0050",
-      hours: "Mon-Fri: 9AM-5PM",
-      distance: 4.1,
-      lastUpdated: "1 hour ago",
-    },
-    {
-      id: "3",
-      name: "Toronto General Hospital Emergency",
-      type: "medical",
-      address: "200 Elizabeth St, Toronto, ON M5G 2C4",
-      phone: "(416) 340-4800",
-      hours: "Open 24/7",
-      distance: 1.8,
-      lastUpdated: "10 minutes ago",
-    },
-    {
-      id: "4",
-      name: "Water Distribution Center - Nathan Phillips Square",
-      type: "water",
-      address: "100 Queen St W, Toronto, ON M5H 2N2",
-      phone: "(416) 392-7111",
-      hours: "Daily: 8AM-8PM",
-      distance: 0.5,
-      lastUpdated: "15 minutes ago",
-    },
-    {
-      id: "5",
-      name: "Covenant House Emergency Shelter",
-      type: "shelter",
-      address: "20 Gerrard St E, Toronto, ON M5B 2P3",
-      phone: "(416) 598-4898",
-      hours: "Open 24/7",
-      distance: 3.2,
-      lastUpdated: "30 minutes ago",
-    },
-  ];
+  });
 
-  const filteredResources = mockResources.filter((resource) =>
-    activeFilters.includes(resource.type)
-  );
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const locationParam = urlParams.get("location");
+    
+    if (locationParam) {
+      setCurrentLocation(locationParam);
+      convertPostalCode(locationParam);
+    } else {
+      convertPostalCode("M5H 2N2");
+    }
+  }, []);
 
-  const mapMarkers = filteredResources.map((resource) => ({
-    id: resource.id,
-    lat: 43.65 + Math.random() * 0.05,
-    lng: -79.38 + Math.random() * 0.05,
-    type: resource.type,
-    name: resource.name,
-  }));
+  const convertPostalCode = async (postalCode: string) => {
+    try {
+      const response = await apiRequest("POST", "/api/postal-code/convert", { postalCode });
+      const data = await response.json();
+      setCoordinates(data);
+      setIsOffline(false);
+    } catch (error) {
+      console.error("Error converting postal code:", error);
+      toast({
+        title: "Error",
+        description: "Could not find coordinates for this postal code. Please try another.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const filteredResources: Resource[] = reliefCenters
+    .filter((center) => activeFilters.includes(center.type))
+    .map((center) => ({
+      id: center.id,
+      name: center.name,
+      type: center.type,
+      address: center.address,
+      phone: center.phone || undefined,
+      hours: center.hours || undefined,
+      distance: center.distance || 0,
+      lastUpdated: formatLastUpdated(center.lastUpdated),
+    }));
+
+  const mapMarkers = reliefCenters
+    .filter((center) => activeFilters.includes(center.type))
+    .map((center) => ({
+      id: center.id,
+      lat: center.latitude,
+      lng: center.longitude,
+      type: center.type,
+      name: center.name,
+    }));
 
   const filterCounts = {
-    shelter: mockResources.filter((r) => r.type === "shelter").length,
-    food: mockResources.filter((r) => r.type === "food").length,
-    medical: mockResources.filter((r) => r.type === "medical").length,
-    water: mockResources.filter((r) => r.type === "water").length,
+    shelter: reliefCenters.filter((r) => r.type === "shelter").length,
+    food: reliefCenters.filter((r) => r.type === "food").length,
+    medical: reliefCenters.filter((r) => r.type === "medical").length,
+    water: reliefCenters.filter((r) => r.type === "water").length,
   };
 
   const handleToggleFilter = (type: ResourceType) => {
@@ -99,16 +138,55 @@ export default function Home() {
 
   const handleSearch = (location: string) => {
     setCurrentLocation(location);
-    console.log("Searching for location:", location);
+    convertPostalCode(location);
+    
+    const url = new URL(window.location.href);
+    url.searchParams.set("location", location);
+    window.history.pushState({}, "", url);
   };
 
   const handleUseCurrentLocation = () => {
-    console.log("Using current location");
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const coords = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          setCoordinates(coords);
+          setCurrentLocation(`${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`);
+          
+          const url = new URL(window.location.href);
+          url.searchParams.set("location", `${coords.lat},${coords.lng}`);
+          window.history.pushState({}, "", url);
+          
+          toast({
+            title: "Location found",
+            description: "Showing relief centers near your current location",
+          });
+        },
+        (error) => {
+          console.error("Geolocation error:", error);
+          toast({
+            title: "Location unavailable",
+            description: "Could not access your location. Please enter a postal code.",
+            variant: "destructive",
+          });
+        }
+      );
+    } else {
+      toast({
+        title: "Not supported",
+        description: "Geolocation is not supported by your browser",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setIsRefreshing(true);
-    setTimeout(() => setIsRefreshing(false), 1500);
+    await refetch();
+    setTimeout(() => setIsRefreshing(false), 500);
   };
 
   const handleGetDirections = (id: string) => {
@@ -120,10 +198,36 @@ export default function Home() {
   };
 
   const handleMarkerClick = (id: string) => {
-    console.log("Marker clicked:", id);
     const element = document.querySelector(`[data-testid="card-resource-${id}"]`);
     element?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
+
+  function formatLastUpdated(dateString: string): string {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    
+    if (diffMins < 1) return "Just now";
+    if (diffMins < 60) return `${diffMins} minute${diffMins === 1 ? "" : "s"} ago`;
+    
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
+    
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
+  }
+
+  if (isLoading && !reliefCenters.length) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading relief centers...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -159,7 +263,13 @@ export default function Home() {
               counts={filterCounts}
             />
             <LastUpdatedIndicator
-              lastUpdated="2 minutes ago"
+              lastUpdated={
+                reliefCenters.length > 0
+                  ? formatLastUpdated(reliefCenters[0].lastUpdated)
+                  : localStorage.getItem("cached-relief-centers")
+                  ? formatLastUpdated(JSON.parse(localStorage.getItem("cached-relief-centers")!).timestamp)
+                  : "Never"
+              }
               onRefresh={handleRefresh}
               isRefreshing={isRefreshing}
             />
@@ -173,8 +283,8 @@ export default function Home() {
             <MapView
               markers={mapMarkers}
               onMarkerClick={handleMarkerClick}
-              userLocation={{ lat: 43.65, lng: -79.38 }}
-              onRecenter={() => console.log("Recenter")}
+              userLocation={coordinates || undefined}
+              onRecenter={() => coordinates && setCoordinates({ ...coordinates })}
             />
           </div>
 
