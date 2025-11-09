@@ -10,6 +10,27 @@ Users can search by postal code or use browser geolocation to find resources, fi
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes
+
+### November 9, 2025 - Bug Fixes and Map Integration
+**Fixed Issues:**
+1. **Postal Code Search** - Expanded lookup table from 8 to 100+ Toronto postal codes, added Nominatim OpenStreetMap API fallback with 24hr caching and 1-second rate limiting
+2. **Get Directions** - Implemented to open Google Maps (Apple Maps on iOS) with resource coordinates in new tab
+3. **Share Functionality** - Implemented with navigator.share API and clipboard fallback, generates shareable URLs with lat/lng query parameters
+4. **Map Visualization** - Replaced grey SVG placeholder with Leaflet-based OpenStreetMap integration featuring:
+   - Real geographic map tiles from OpenStreetMap
+   - Color-coded markers by resource type (shelter=red, food=orange, medical=blue, water=purple)
+   - User location indicator with animated pulse
+   - Auto-zoom to fit all markers in view
+   - Recenter button for navigation
+5. **URL Management** - Fixed query parameter handling to properly clear old params when searching or using geolocation
+6. **Offline Support** - Added localStorage caching for relief center data with fallback on network failures
+
+**Known Limitations:**
+- Nominatim geocoding rate limiting is basic (1 request/second) - may need enhancement for high-traffic disaster scenarios
+- Map markers could benefit from enhanced keyboard navigation and screen reader support for full accessibility compliance
+- Geocode cache is in-memory only - resets on server restart (consider persistent storage for production)
+
 ## System Architecture
 
 ### Frontend Architecture

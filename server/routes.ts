@@ -3,6 +3,12 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { seedDatabase } from "./seed";
 
+const geocodeCache = new Map<string, { lat: number; lng: number; timestamp: number }>();
+const CACHE_DURATION_MS = 24 * 60 * 60 * 1000;
+
+const lastNominatimRequest = { timestamp: 0 };
+const MIN_REQUEST_INTERVAL_MS = 1000;
+
 const postalCodeCoordinates: Record<string, { lat: number; lng: number }> = {
   "M5H2N2": { lat: 43.6534, lng: -79.3839 },
   "M5H 2N2": { lat: 43.6534, lng: -79.3839 },
@@ -193,13 +199,68 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const normalized = postalCode.toUpperCase().replace(/\s+/g, "");
       const coordinates = postalCodeCoordinates[normalized] || postalCodeCoordinates[postalCode.toUpperCase()];
 
-      if (!coordinates) {
-        return res.status(404).json({ 
-          error: "Postal code not found. Try M5H 2N2, M5G 2C4, or other Toronto postal codes." 
-        });
+      if (coordinates) {
+        return res.json(coordinates);
       }
 
-      res.json(coordinates);
+      const cached = geocodeCache.get(normalized);
+      if (cached && Date.now() - cached.timestamp < CACHE_DURATION_MS) {
+        return res.json({ lat: cached.lat, lng: cached.lng });
+      }
+
+      try {
+        const now = Date.now();
+        const timeSinceLastRequest = now - lastNominatimRequest.timestamp;
+        
+        if (timeSinceLastRequest < MIN_REQUEST_INTERVAL_MS) {
+          await new Promise(resolve => setTimeout(resolve, MIN_REQUEST_INTERVAL_MS - timeSinceLastRequest));
+        }
+        
+        lastNominatimRequest.timestamp = Date.now();
+        
+        const nominatimUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(postalCode)},Toronto,Canada&format=json&limit=1`;
+        const response = await fetch(nominatimUrl, {
+          headers: {
+            'User-Agent': 'Relief-Resource-Locator/1.0'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error("Nominatim request failed");
+        }
+
+        const data = await response.json();
+        
+        if (data && data.length > 0) {
+          const result = {
+            lat: parseFloat(data[0].lat),
+            lng: parseFloat(data[0].lon),
+          };
+          
+          geocodeCache.set(normalized, {
+            ...result,
+            timestamp: Date.now(),
+          });
+
+          if (geocodeCache.size > 1000) {
+            const firstKey = geocodeCache.keys().next().value;
+            if (firstKey) {
+              geocodeCache.delete(firstKey);
+            }
+          }
+          
+          return res.json(result);
+        }
+
+        return res.status(404).json({ 
+          error: "Postal code not found. Please try another location or use your current location." 
+        });
+      } catch (geocodingError) {
+        console.error("Geocoding fallback failed:", geocodingError);
+        return res.status(404).json({ 
+          error: "Postal code not found. Please try another location or use your current location." 
+        });
+      }
     } catch (error) {
       console.error("Error converting postal code:", error);
       res.status(500).json({ error: "Failed to convert postal code" });

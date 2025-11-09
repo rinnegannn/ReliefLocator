@@ -1,5 +1,7 @@
-import { useState } from "react";
-import { Navigation, ZoomIn, ZoomOut } from "lucide-react";
+import { useEffect, useRef } from "react";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ResourceType } from "./FilterControls";
 
@@ -25,124 +27,129 @@ const markerColors: Record<ResourceType, string> = {
   water: "#7b1fa2",
 };
 
+function createCustomIcon(color: string): L.DivIcon {
+  return L.divIcon({
+    html: `<svg width="32" height="40" viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M16 0C7.163 0 0 7.163 0 16c0 8.837 16 24 16 24s16-15.163 16-24c0-8.837-7.163-16-16-16z" fill="${color}"/>
+      <circle cx="16" cy="15" r="6" fill="white"/>
+    </svg>`,
+    className: "custom-marker-icon",
+    iconSize: [32, 40],
+    iconAnchor: [16, 40],
+    popupAnchor: [0, -40],
+  });
+}
+
 export default function MapView({
   markers,
   onMarkerClick,
   userLocation,
   onRecenter,
 }: MapViewProps) {
-  const [zoom, setZoom] = useState(12);
+  const mapRef = useRef<L.Map | null>(null);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const markersLayerRef = useRef<L.LayerGroup | null>(null);
+  const userMarkerRef = useRef<L.Marker | null>(null);
+
+  useEffect(() => {
+    if (!mapContainerRef.current || mapRef.current) return;
+
+    const defaultCenter: [number, number] = userLocation
+      ? [userLocation.lat, userLocation.lng]
+      : [43.6532, -79.3832];
+
+    const map = L.map(mapContainerRef.current).setView(defaultCenter, 12);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 19,
+    }).addTo(map);
+
+    mapRef.current = map;
+    markersLayerRef.current = L.layerGroup().addTo(map);
+
+    return () => {
+      map.remove();
+      mapRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!mapRef.current || !markersLayerRef.current) return;
+
+    markersLayerRef.current.clearLayers();
+
+    markers.forEach((marker) => {
+      const icon = createCustomIcon(markerColors[marker.type]);
+      const leafletMarker = L.marker([marker.lat, marker.lng], { icon })
+        .bindPopup(`<strong>${marker.name}</strong>`)
+        .on("click", () => onMarkerClick(marker.id));
+
+      leafletMarker.getElement()?.setAttribute("data-testid", `marker-${marker.id}`);
+      markersLayerRef.current!.addLayer(leafletMarker);
+    });
+
+    if (markers.length > 0 && mapRef.current) {
+      const bounds = L.latLngBounds(markers.map((m) => [m.lat, m.lng]));
+      mapRef.current.fitBounds(bounds, { padding: [50, 50], maxZoom: 13 });
+    } else if (markers.length === 0 && userLocation && mapRef.current) {
+      mapRef.current.setView([userLocation.lat, userLocation.lng], 12);
+    }
+  }, [markers, onMarkerClick, userLocation]);
+
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    if (userMarkerRef.current) {
+      userMarkerRef.current.remove();
+      userMarkerRef.current = null;
+    }
+
+    if (userLocation) {
+      const userIcon = L.divIcon({
+        html: `<div class="w-4 h-4 bg-primary rounded-full border-2 border-white shadow-lg relative">
+          <div class="absolute inset-0 bg-primary rounded-full animate-ping opacity-75"></div>
+        </div>`,
+        className: "user-location-marker",
+        iconSize: [16, 16],
+        iconAnchor: [8, 8],
+      });
+
+      userMarkerRef.current = L.marker([userLocation.lat, userLocation.lng], {
+        icon: userIcon,
+      }).addTo(mapRef.current);
+
+      userMarkerRef.current.getElement()?.setAttribute("data-testid", "marker-user-location");
+    }
+  }, [userLocation]);
+
+  const handleRecenter = () => {
+    if (!mapRef.current) return;
+
+    if (userLocation) {
+      mapRef.current.setView([userLocation.lat, userLocation.lng], 12);
+    } else if (markers.length > 0) {
+      const bounds = L.latLngBounds(markers.map((m) => [m.lat, m.lng]));
+      mapRef.current.fitBounds(bounds, { padding: [50, 50], maxZoom: 13 });
+    }
+  };
 
   return (
-    <div className="relative w-full h-full min-h-[500px] bg-muted rounded-md overflow-hidden" data-testid="map-view">
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="relative w-full h-full">
-          <svg className="w-full h-full">
-            <defs>
-              <pattern
-                id="grid"
-                width="40"
-                height="40"
-                patternUnits="userSpaceOnUse"
-              >
-                <path
-                  d="M 40 0 L 0 0 0 40"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="0.5"
-                  className="text-border"
-                />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#grid)" />
-          </svg>
-
-          {userLocation && (
-            <div
-              className="absolute w-4 h-4 bg-primary rounded-full border-2 border-white shadow-lg"
-              style={{
-                left: "50%",
-                top: "50%",
-                transform: "translate(-50%, -50%)",
-              }}
-              data-testid="marker-user-location"
-            >
-              <div className="absolute inset-0 bg-primary rounded-full animate-ping opacity-75" />
-            </div>
-          )}
-
-          {markers.map((marker, index) => {
-            const angle = (index / markers.length) * 2 * Math.PI;
-            const radius = 120 + (index % 3) * 40;
-            const x = 50 + Math.cos(angle) * radius;
-            const y = 50 + Math.sin(angle) * radius;
-
-            return (
-              <button
-                key={marker.id}
-                className="absolute w-8 h-8 -translate-x-1/2 -translate-y-full cursor-pointer hover-elevate active-elevate-2 rounded-full"
-                style={{
-                  left: `${x}%`,
-                  top: `${y}%`,
-                }}
-                onClick={() => onMarkerClick(marker.id)}
-                data-testid={`marker-${marker.id}`}
-              >
-                <svg
-                  width="32"
-                  height="40"
-                  viewBox="0 0 32 40"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M16 0C7.163 0 0 7.163 0 16c0 8.837 16 24 16 24s16-15.163 16-24c0-8.837-7.163-16-16-16z"
-                    fill={markerColors[marker.type]}
-                  />
-                  <circle cx="16" cy="15" r="6" fill="white" />
-                </svg>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="absolute top-4 right-4 flex flex-col gap-2">
-        <Button
-          size="icon"
-          variant="secondary"
-          className="shadow-lg"
-          onClick={() => setZoom(Math.min(20, zoom + 1))}
-          data-testid="button-zoom-in"
-        >
-          <ZoomIn className="h-4 w-4" />
-        </Button>
-        <Button
-          size="icon"
-          variant="secondary"
-          className="shadow-lg"
-          onClick={() => setZoom(Math.max(1, zoom - 1))}
-          data-testid="button-zoom-out"
-        >
-          <ZoomOut className="h-4 w-4" />
-        </Button>
-      </div>
+    <div className="relative w-full h-full min-h-[500px] rounded-md overflow-hidden" data-testid="map-view">
+      <div ref={mapContainerRef} className="w-full h-full min-h-[500px]" />
 
       {onRecenter && (
         <Button
           size="icon"
           variant="secondary"
-          className="absolute bottom-4 right-4 shadow-lg"
-          onClick={onRecenter}
+          className="absolute bottom-4 right-4 shadow-lg z-[1000]"
+          onClick={handleRecenter}
           data-testid="button-recenter"
         >
           <Navigation className="h-4 w-4" />
         </Button>
       )}
-
-      <div className="absolute bottom-4 left-4 bg-card border border-card-border rounded-md px-3 py-2 text-sm font-medium shadow-lg">
-        Zoom: {zoom}
-      </div>
     </div>
   );
 }

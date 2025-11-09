@@ -74,9 +74,18 @@ export default function Home() {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
+    const lat = urlParams.get("lat");
+    const lng = urlParams.get("lng");
     const locationParam = urlParams.get("location");
     
-    if (locationParam) {
+    if (lat && lng) {
+      const coords = {
+        lat: parseFloat(lat),
+        lng: parseFloat(lng),
+      };
+      setCoordinates(coords);
+      setCurrentLocation(`${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`);
+    } else if (locationParam) {
       setCurrentLocation(locationParam);
       convertPostalCode(locationParam);
     } else {
@@ -141,6 +150,9 @@ export default function Home() {
     convertPostalCode(location);
     
     const url = new URL(window.location.href);
+    url.searchParams.delete("lat");
+    url.searchParams.delete("lng");
+    url.searchParams.delete("resource");
     url.searchParams.set("location", location);
     window.history.pushState({}, "", url);
   };
@@ -157,7 +169,10 @@ export default function Home() {
           setCurrentLocation(`${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`);
           
           const url = new URL(window.location.href);
-          url.searchParams.set("location", `${coords.lat},${coords.lng}`);
+          url.searchParams.delete("location");
+          url.searchParams.delete("resource");
+          url.searchParams.set("lat", coords.lat.toString());
+          url.searchParams.set("lng", coords.lng.toString());
           window.history.pushState({}, "", url);
           
           toast({
@@ -207,7 +222,7 @@ export default function Home() {
     const center = reliefCenters.find((c) => c.id === id);
     if (!center) return;
 
-    const shareUrl = `${window.location.origin}${window.location.pathname}?location=${encodeURIComponent(center.address)}&resource=${id}`;
+    const shareUrl = `${window.location.origin}${window.location.pathname}?lat=${center.latitude}&lng=${center.longitude}&resource=${id}`;
     const shareText = `${center.name} - ${center.address}`;
 
     if (navigator.share) {
