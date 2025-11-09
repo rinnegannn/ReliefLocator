@@ -8,7 +8,20 @@ Emergency relief resource locator helping disaster victims find nearby shelters,
 
 ---
 
-## ✨ Features
+# Relief Resource Locator
+
+A lightweight web application that helps people find nearby relief resources (shelters, supplies, medical, and info hubs) during and after natural disasters.
+
+> **Dev URL:** http://localhost:5000
+
+---
+
+## ✨ Features (high level)
+- Search and browse local relief resources
+- Filter by category (e.g., food, shelter, medical)
+- Map/list views (implementation-specific)
+- Offline-first considerations and error handling (where supported)
+- Simple, fast setup for hackathon/competition environments
 
 ### 🗺️ Interactive Mapping
 - **Color-Coded Markers** - Red (shelters), Orange (food), Blue (medical), Purple (water)
@@ -41,53 +54,33 @@ Emergency relief resource locator helping disaster victims find nearby shelters,
 
 ---
 
-## 🚀 Quick Start
+## 🧰 Tech & Requirements
+- **Node.js** (v18+ recommended; v20+ ideal)
+- **npm** (v9+)
+- **git**
+- Linux/macOS/WSL supported
 
-### Option 1: Automated Setup (Recommended)
-
-**Linux/Mac:**
-```bash
-git clone https://github.com/yourusername/relief-resource-locator.git
-cd relief-resource-locator
-chmod +x setup.sh
-./setup.sh
-npm run dev
-```
-
-**Windows:**
-```cmd
-git clone https://github.com/yourusername/relief-resource-locator.git
-cd relief-resource-locator
-setup.bat
-npm run dev
-```
-
-The setup script will:
-- ✅ Install all dependencies (85+ packages)
-- ✅ Auto-create SQLite database (`./dev.db`)
-- ✅ Seed 34 relief centers automatically
-- ✅ Run type checking
-
-### Option 2: Manual Setup
-
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/relief-resource-locator.git
-cd relief-resource-locator
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-```
-
-**That's it!** The app will automatically:
-- Create `./dev.db` SQLite database
-- Seed 34 relief centers (Toronto, Guelph, Hamilton)
-- Start on http://localhost:5000
+> If you’re on Windows, we recommend **WSL** (Ubuntu) for the smoothest experience.
 
 ---
+
+## 🚀 Quick Start
+
+```bash
+# 1) Clone the repo
+git clone https://github.com/rinnegannn/ReliefLocator.git
+cd ReliefLocator
+
+# 2) Run setup (installs system deps where needed + npm packages)
+./setup.sh
+
+# 3) Start the dev server
+npm run dev
+
+# 4) Open the app
+# Follow the link printed in the terminal, or visit:
+http://localhost:5000
+```
 
 ## 🗄️ Database Options
 
