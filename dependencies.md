@@ -354,61 +354,6 @@ None currently required for core functionality.
 
 ---
 
-## Installation
-
-### Quick Setup (Recommended)
-
-**Automated installation script that handles everything:**
-
-**Linux/Mac:**
-```bash
-chmod +x setup.sh
-./setup.sh
-```
-
-**Windows:**
-```cmd
-setup.bat
-```
-
-The setup script will:
-- ✓ Check Node.js installation
-- ✓ Install all npm dependencies
-- ✓ Verify environment variables
-- ✓ Setup database schema
-- ✓ Run type checking
-- ✓ Provide next steps
-
-### Manual Installation
-
-If you prefer to install manually:
-
-```bash
-# Install dependencies
-npm install
-```
-
-All dependencies are managed via npm and listed in `package.json`.
-
-### Database Setup
-```bash
-# Push schema changes to database
-npm run db:push
-
-# Type check the project
-npm run check
-```
-
-### Running the Application
-```bash
-# Development mode (both frontend and backend)
-npm run dev
-
-# The workflow "Start application" runs this command automatically
-```
-
----
-
 ## Version Management
 
 ### Package Versions
@@ -527,10 +472,6 @@ All package versions are managed in `package.json`. The project uses:
 - [Leaflet](https://leafletjs.com)
 - [Radix UI](https://www.radix-ui.com)
 - [Shadcn/ui](https://ui.shadcn.com)
-
-### Community Resources
-- [OpenStreetMap Wiki](https://wiki.openstreetmap.org)
-- [Nominatim Usage Policy](https://operations.osmfoundation.org/policies/nominatim/)
 
 ---
 
