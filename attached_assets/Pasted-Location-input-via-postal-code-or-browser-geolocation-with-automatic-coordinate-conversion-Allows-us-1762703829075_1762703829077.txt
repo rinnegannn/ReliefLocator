@@ -1,0 +1,35 @@
+Location input via postal code or browser geolocation with automatic coordinate conversion
+Allows users to either manually enter their postal code or use GPS; converts input into precise coordinates for accurate searching.
+
+Interactive Google Maps integration displaying relief centers with custom markers by type (shelter, food, medical, water)
+Uses the Google Maps API to plot all nearby centers with clear, color-coded icons for easy visual identification.
+
+25 km radius search filtering to show only nearby relief centers
+Filters results to within a practical distance of the user’s location for relevance and faster map rendering.
+
+Clickable map pins showing detailed information (name, type, address, phone, hours, last updated)
+Displays complete details for each center in a popup card when the marker is clicked.
+
+List view alongside map showing all nearby centers with distance calculations
+Provides a sortable list view next to the map, showing each center’s distance from the user’s current location.
+
+Resource type filtering (show/hide shelters, food banks, medical centers, water stations)
+Lets users toggle specific resource categories to focus on what they need most.
+
+Relief center data stored in Supabase with fields for name, type, coordinates, contact info, and timestamps
+Uses Supabase as the main database for real-time data storage, retrieval, and updates whenever new centers are added.
+
+Automatic data refresh and “Last Updated” indicator
+Periodically refreshes data from Supabase and displays the latest update time to maintain accuracy.
+
+Basic offline caching for reliability
+Temporarily stores the most recent results in local browser storage so users can still view information if the network connection fails.
+
+Emergency alert banner for live warnings or evacuation notices
+Optional top-of-page banner pulling messages from public emergency APIs or data feeds.
+
+Mobile-responsive design with Tailwind CSS for a clean, modern interface
+Ensures the website works seamlessly across desktops, tablets, and smartphones with a polished, accessible layout.
+
+Shareable location links for quick communication
+Generates a shareable URL containing the user’s coordinates or a specific relief center so others can easily locate the same resource.
