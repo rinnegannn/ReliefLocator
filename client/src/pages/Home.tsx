@@ -291,7 +291,7 @@ export default function Home() {
   }
 
   return (
-    <div className="h-screen overflow-hidden bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <EmergencyAlertBanner
         message="Evacuation order in effect for downtown area. Seek shelter immediately at designated evacuation centers."
         timestamp="Updated 15 minutes ago"
@@ -332,10 +332,10 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="flex-1 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 h-full">
-          <div className="grid lg:grid-cols-[1.5fr_1fr] gap-6 h-full">
-            <div className="order-2 lg:order-1 h-full">
+      <main className="flex-1">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-6">
+          <div className="grid lg:grid-cols-[1.5fr_1fr] gap-6">
+            <div className="order-2 lg:order-1 min-h-[600px]">
               <MapView
                 markers={mapMarkers}
                 onMarkerClick={handleMarkerClick}
@@ -344,7 +344,7 @@ export default function Home() {
               />
             </div>
 
-            <div className="order-1 lg:order-2 overflow-auto h-full">
+            <div className="order-1 lg:order-2">
               <ResourceList
                 resources={filteredResources}
                 onGetDirections={handleGetDirections}
