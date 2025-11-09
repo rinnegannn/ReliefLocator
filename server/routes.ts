@@ -218,7 +218,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         lastNominatimRequest.timestamp = Date.now();
         
-        const nominatimUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(postalCode)},Ontario,Canada&format=json&limit=1`;
+        const nominatimUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(postalCode)}&format=json&limit=1`;
         const response = await fetch(nominatimUrl, {
           headers: {
             'User-Agent': 'Relief-Resource-Locator/1.0'

@@ -216,7 +216,7 @@ export default function Home() {
     
     const mapsUrl = isIOS
       ? `maps://maps.apple.com/?daddr=${destination}&dirflg=d`
-      : `https://www.google.com/maps/dir/?api=1&destination=${center.latitude},${center.longitude}`;
+      : `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
 
     window.open(mapsUrl, "_blank");
   };
