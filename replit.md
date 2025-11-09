@@ -12,12 +12,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-### November 9, 2025 - Additional Fixes for Guelph Support and Refresh
-**Latest Fixes:**
-1. **Guelph Area Support** - Added 8 Guelph relief centers to seed data (now 26 total: 18 Toronto + 8 Guelph)
-2. **Province-Wide Geocoding** - Changed Nominatim search from "Toronto, Canada" to "Ontario, Canada" to support all Ontario postal codes
-3. **Refresh Timestamp Fix** - Changed "Last updated" to show actual data fetch time instead of database timestamp, now updates correctly when refresh is clicked
-4. **Shared Links Fixed** - With Guelph data added, shared coordinate URLs now properly display resources instead of showing 0 results
+### November 9, 2025 - Global Location Support and Address Fixes
+**Latest Enhancements:**
+1. **Global Location Search** - Removed geographic restrictions from Nominatim geocoding, now supports any location worldwide (Hamilton, Miami, Paris, etc.)
+2. **Get Directions Address Fix** - Fixed Google Maps to use the exact address displayed on the website instead of coordinates
+3. **Guelph Area Support** - Added 8 Guelph relief centers to seed data (now 26 total: 18 Toronto + 8 Guelph)
+4. **Refresh Timestamp Fix** - Changed "Last updated" to show actual data fetch time instead of database timestamp, now updates correctly when refresh is clicked
+5. **Shared Links Fixed** - Shared coordinate URLs now properly display resources instead of showing 0 results
 
 ### November 9, 2025 - Bug Fixes and Map Integration
 **Previous Fixes:**
