@@ -241,7 +241,82 @@ const guelphReliefCenters: InsertReliefCenter[] = [
   },
 ];
 
-const allReliefCenters = [...torontoReliefCenters, ...guelphReliefCenters];
+const hamiltonReliefCenters: InsertReliefCenter[] = [
+  {
+    name: "FirstOntario Centre Emergency Shelter",
+    type: "shelter",
+    latitude: 43.2557,
+    longitude: -79.8711,
+    address: "101 York Blvd, Hamilton, ON L8R 3L4",
+    phone: "(905) 546-4200",
+    hours: "Open 24/7",
+  },
+  {
+    name: "Hamilton City Hall Emergency Center",
+    type: "shelter",
+    latitude: 43.2567,
+    longitude: -79.8728,
+    address: "71 Main St W, Hamilton, ON L8P 4Y5",
+    phone: "(905) 546-2489",
+    hours: "Open 24/7",
+  },
+  {
+    name: "Hamilton Food Share",
+    type: "food",
+    latitude: 43.2465,
+    longitude: -79.8170,
+    address: "1550 Upper Wentworth St, Hamilton, ON L9B 1L7",
+    phone: "(905) 383-7505",
+    hours: "Mon-Fri: 9AM-4PM",
+  },
+  {
+    name: "Good Shepherd Centre Food Bank",
+    type: "food",
+    latitude: 43.2584,
+    longitude: -79.8656,
+    address: "135 Mary St, Hamilton, ON L8L 4V1",
+    phone: "(905) 528-9109",
+    hours: "Mon-Fri: 9AM-5PM",
+  },
+  {
+    name: "Hamilton General Hospital",
+    type: "medical",
+    latitude: 43.2594,
+    longitude: -79.8640,
+    address: "237 Barton St E, Hamilton, ON L8L 2X2",
+    phone: "(905) 527-4322",
+    hours: "Open 24/7",
+  },
+  {
+    name: "St. Joseph's Healthcare Hamilton",
+    type: "medical",
+    latitude: 43.2507,
+    longitude: -79.8783,
+    address: "50 Charlton Ave E, Hamilton, ON L8N 4A6",
+    phone: "(905) 522-1155",
+    hours: "Open 24/7",
+  },
+  {
+    name: "Bayfront Park Emergency Water Station",
+    type: "water",
+    latitude: 43.2697,
+    longitude: -79.8711,
+    address: "200 Harbour Front Dr, Hamilton, ON L8L 1C8",
+    phone: "(905) 546-2489",
+    hours: "Daily: 8AM-8PM",
+  },
+  {
+    name: "Gage Park Water Distribution Point",
+    type: "water",
+    latitude: 43.2454,
+    longitude: -79.8366,
+    address: "1000 Main St E, Hamilton, ON L8M 1N7",
+    phone: "(905) 546-2489",
+    hours: "Daily: 8AM-8PM",
+  },
+];
+
+const allReliefCenters = [...torontoReliefCenters, ...guelphReliefCenters, ...hamiltonReliefCenters];
 
 export async function seedDatabase() {
   try {

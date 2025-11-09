@@ -300,12 +300,12 @@ export default function Home() {
 
       {isOffline && <OfflineIndicator />}
 
-      <header className="sticky top-0 z-10 bg-background border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 py-4 space-y-4">
+      <header className="sticky top-0 z-10 bg-background border-b border-border shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-5 space-y-5">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold">Relief Resource Locator</h1>
-              <p className="text-sm text-muted-foreground mt-1">
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground">Relief Resource Locator</h1>
+              <p className="text-sm text-muted-foreground mt-1.5">
                 Find emergency resources within 25km of your location
               </p>
             </div>
@@ -332,7 +332,7 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-6">
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-6">
         <div className="grid lg:grid-cols-[1.5fr_1fr] gap-6">
           <div className="order-2 lg:order-1">
             <MapView

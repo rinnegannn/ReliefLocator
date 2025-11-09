@@ -44,32 +44,32 @@ export default function ResourceCard({
   onShare,
 }: ResourceCardProps) {
   return (
-    <Card className="w-full hover-elevate" data-testid={`card-resource-${id}`}>
-      <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0 pb-3">
+    <Card className="w-full hover-elevate shadow-md" data-testid={`card-resource-${id}`}>
+      <CardHeader className="flex flex-row items-start justify-between gap-3 space-y-0 pb-4">
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold leading-tight" data-testid={`text-name-${id}`}>
+          <h3 className="text-lg font-semibold leading-tight mb-2" data-testid={`text-name-${id}`}>
             {name}
           </h3>
-          <Badge className={`mt-2 ${typeColors[type]}`} data-testid={`badge-type-${id}`}>
+          <Badge className={`${typeColors[type]} no-default-hover-elevate`} data-testid={`badge-type-${id}`}>
             {typeLabels[type]}
           </Badge>
         </div>
         <div className="text-right flex-shrink-0">
-          <div className="text-lg font-semibold text-primary" data-testid={`text-distance-${id}`}>
+          <div className="text-xl font-bold text-primary" data-testid={`text-distance-${id}`}>
             {distance.toFixed(1)} km
           </div>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-3 text-sm">
-        <div className="flex gap-2">
-          <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-          <p className="text-foreground" data-testid={`text-address-${id}`}>{address}</p>
+      <CardContent className="space-y-3.5 text-sm">
+        <div className="flex gap-3">
+          <MapPin className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+          <p className="text-foreground leading-relaxed" data-testid={`text-address-${id}`}>{address}</p>
         </div>
 
         {phone && (
-          <div className="flex gap-2">
-            <Phone className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+          <div className="flex gap-3">
+            <Phone className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
             <a
               href={`tel:${phone}`}
               className="text-primary hover:underline font-medium"
@@ -81,20 +81,20 @@ export default function ResourceCard({
         )}
 
         {hours && (
-          <div className="flex gap-2">
-            <Clock className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-            <p className="text-muted-foreground" data-testid={`text-hours-${id}`}>{hours}</p>
+          <div className="flex gap-3">
+            <Clock className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+            <p className="text-foreground" data-testid={`text-hours-${id}`}>{hours}</p>
           </div>
         )}
 
-        <div className="text-xs text-muted-foreground pt-2" data-testid={`text-updated-${id}`}>
+        <div className="text-xs text-muted-foreground pt-1.5 border-t border-border mt-4" data-testid={`text-updated-${id}`}>
           Last updated: {lastUpdated}
         </div>
       </CardContent>
 
-      <CardFooter className="gap-2 flex-wrap">
+      <CardFooter className="gap-3 flex-wrap pt-5">
         <Button
-          className="flex-1"
+          className="flex-1 min-w-[140px]"
           onClick={() => onGetDirections(id)}
           data-testid={`button-directions-${id}`}
         >
@@ -106,6 +106,7 @@ export default function ResourceCard({
             variant="outline"
             onClick={() => onShare(id)}
             data-testid={`button-share-${id}`}
+            className="min-w-[100px]"
           >
             Share
           </Button>

@@ -2,157 +2,127 @@
 
 ## Design Approach
 
-**System Selection**: Material Design principles adapted for emergency response applications
-**References**: Google Maps interface patterns, emergency.gov clarity, FEMA mobile apps
-**Core Principle**: Maximum clarity and speed of information access during high-stress situations
+**System**: Material Design principles for emergency response applications
+**References**: Google Maps interface patterns, emergency.gov, FEMA mobile apps
+**Core Principle**: Maximum clarity and information access speed during high-stress situations. This is a utility-first application—no hero section, users need immediate access to map and search functionality.
+
+## Color System
+
+**Primary Blue** (Trust & Calm):
+- Primary: #1976D2 (buttons, active states, map markers)
+- Primary Dark: #1565C0 (hover states, header)
+- Primary Light: #E3F2FD (background panels, hover backgrounds)
+
+**Critical Red** (Alerts & Urgency):
+- Alert: #D32F2F (emergency banners, critical status)
+- Alert Light: #FFEBEE (alert backgrounds)
+
+**Neutrals** (Clarity):
+- White: #FFFFFF (main background, cards)
+- Gray 50: #FAFAFA (secondary backgrounds)
+- Gray 100: #F5F5F5 (disabled states)
+- Gray 400: #BDBDBD (borders, dividers)
+- Gray 700: #616161 (secondary text)
+- Gray 900: #212121 (primary text)
+
+**Status Colors**:
+- Success/Open: #2E7D32 (operational resources)
+- Warning: #F57C00 (limited capacity)
+- Info: #0288D1 (informational notices)
+
+**Shadows**: Use Material Design elevation system
+- Cards: shadow-md (4px elevation)
+- Modals: shadow-xl (24px elevation)
+- Floating buttons: shadow-lg (8px elevation)
 
 ## Typography System
 
-**Font Family**: Inter (via Google Fonts CDN) for exceptional legibility at all sizes
+**Font Family**: Inter (Google Fonts) for exceptional legibility
 - Headings: 600-700 weight
-- Body text: 400-500 weight
-- Critical information (addresses, phone numbers): 500-600 weight
+- Body: 400-500 weight  
+- Critical info: 500-600 weight
 
-**Type Scale**:
-- Hero/Page Title: text-3xl md:text-4xl
+**Scale**:
+- Page Title: text-2xl md:text-3xl
 - Section Headers: text-xl md:text-2xl
-- Card Titles/Resource Names: text-lg font-semibold
-- Body/List Items: text-base
-- Metadata (distances, timestamps): text-sm
-- Alert Banner: text-base md:text-lg font-medium
+- Resource Names: text-lg font-semibold
+- Body: text-base
+- Metadata: text-sm text-gray-700
+- Alert Text: text-base md:text-lg font-medium
 
 ## Layout System
 
-**Spacing Primitives**: Tailwind units of 2, 3, 4, 6, 8, 12
+**Spacing**: Tailwind units of 2, 4, 6, 8
 - Component padding: p-4 md:p-6
-- Section spacing: space-y-4 md:space-y-6
-- Card spacing: p-4
-- Button padding: px-4 py-2 md:px-6 py-3
+- Section gaps: space-y-4 md:space-y-6
+- Card padding: p-4
+- Button padding: px-6 py-3
 
 **Grid Structure**:
-- Desktop: Two-column split (map 60% / list 40%)
-- Tablet: Stacked with tabs to switch views
-- Mobile: Single column, map-first with scrollable list below
-
-**Container Strategy**:
-- Full-width map container
-- Content max-width: max-w-7xl
-- Form elements: max-w-md
+- Desktop: 60/40 split (map/list) with divider
+- Tablet: Tabbed switching between views
+- Mobile: Map-first, scrollable list below
+- All layouts: Full-width map, max-w-7xl for content
 
 ## Component Library
 
 ### Navigation Header
-- Sticky top bar (h-16 md:h-20)
-- Logo/title left-aligned
-- Location input center (desktop) or below (mobile)
-- Icon-only utilities right-aligned (share, settings)
+Fixed top bar (h-16 md:h-20), white bg, shadow-sm. Logo left, location search center (desktop) or full-width below (mobile), utilities right. Border-b with gray-200.
 
 ### Emergency Alert Banner
-- Full-width, positioned above header
-- Dismissible with X button
-- Icon + bold message + timestamp
-- Collapsible to icon-only bar after dismissal
+Full-width, bg-red-50, border-l-4 border-alert, dismissible. Bold red text, icon, timestamp. Sticky position above header.
 
-### Search & Location Input
-- Prominent search bar with location icon
-- Toggle buttons: "Use My Location" | "Enter Postal Code"
-- Autocomplete dropdown for postal code suggestions
-- Clear visual feedback for active location detection
+### Search & Location
+Prominent search with blue location icon. Toggle: "Use My Location" (blue filled) / "Enter Postal Code" (outline). Autocomplete dropdown, white cards with shadow-md.
 
 ### Filter Controls
-- Horizontal chip-based toggles (desktop)
-- Icon + label for each resource type (shelter, food, medical, water)
-- Active state shows count badge
-- Collapsible drawer on mobile
+Horizontal chip toggles with icons. Active: blue bg, white text, count badge. Inactive: gray-100 bg, gray-700 text. Rounded-full, px-4 py-2. Mobile: collapsible drawer.
 
 ### Map Interface
-- Full-height container (min-h-[500px] md:min-h-screen)
-- Custom marker clusters for density management
-- Zoom controls positioned bottom-right
-- "Recenter to my location" floating action button
+Full-height (min-h-[500px] md:min-h-screen). Custom blue markers, cluster icons for density. Zoom controls bottom-right. Floating recenter button (blue, shadow-lg).
 
-### Resource Cards (Map Popups)
-- Card size: w-72
-- Header: Resource name + type badge
-- Body: Address, phone (tap-to-call), hours
-- Footer: Distance indicator + "Last updated" timestamp
-- Primary CTA: "Get Directions" button
+### Resource Cards
+Width w-80, white bg, shadow-md, rounded-lg. Header: resource type badge (blue for shelter, green for food, red for medical, cyan for water). Body: address, phone (blue link), hours. Footer: distance chip, timestamp text-sm.
 
-### List View Panel
-- Scrollable container with shadow separator from map
-- Each item: compact card (h-24 md:h-28)
-- Left: Type icon circle
-- Center: Name, address, distance
-- Right: Chevron for detail view
-- Sort dropdown at top: "Nearest" | "Recently Updated" | "By Type"
+### List Panel
+Scrollable, white bg, shadow-lg separator. Each item: h-24, border-b gray-200. Type icon circle (colored by category), name/address/distance stack, chevron right. Sort dropdown at top.
 
-### Detail Modal (Mobile)
-- Slide-up panel covering 80% viewport
-- Large type icon at top
-- All resource information
-- Action buttons: Call, Directions, Share
-- Swipe-down to dismiss
+### Detail Modal
+Slide-up panel (mobile), 80vh height, rounded-t-2xl. Large icon circle at top, full resource info, action buttons row (Call, Directions, Share - all blue primary). Swipe indicator.
 
-### Status Indicators
-- "Last Updated" timestamp: sticky bottom bar or floating chip
-- Offline mode banner: prominent yellow alert
-- Loading states: skeleton screens for list, spinner overlay for map
-- Empty states: centered message with icon for "No results found"
+### Status Elements
+Sticky bottom timestamp bar, blue-50 bg. Offline banner: yellow warning. Loading: skeleton screens (gray-100 pulse). Empty state: centered with gray icon, text-gray-600.
 
-## Accessibility Implementation
+## Accessibility
 
-- ARIA labels on all interactive map elements
-- Keyboard navigation for filter chips and list items
-- Focus indicators: 2px ring with offset
-- Tap targets minimum 44x44px on mobile
-- Screen reader announcements for live updates
-- High contrast mode support for critical information
+- ARIA labels on all map interactions
+- Keyboard nav for filters/lists
+- 2px blue focus rings with offset
+- 48px minimum touch targets mobile
+- Screen reader live region announcements
+- High contrast mode: darken blues, enhance borders
 
-## Asset Guidelines
+## Assets
 
-**Icons**: Heroicons (outline for UI controls, solid for resource types)
-- Shelter: home icon
-- Food: shopping-bag icon
-- Medical: heart icon with pulse
-- Water: beaker icon
+**Icons**: Heroicons via CDN
+- UI: outline variant (search, location, close, chevrons)
+- Resources: solid (home-shelter, shopping-bag-food, heart-medical, beaker-water)
 
-**Maps**: Google Maps JavaScript API via CDN
-- Custom marker icons using data URIs for resource types
-- Marker clustering library for performance
+**Maps**: Google Maps JavaScript API with custom styled markers using data URIs for type-based colors
 
 ## Animations
 
-**Minimal Motion Approach**:
-- Map marker drop-in: single bounce on load
-- Filter toggle: smooth opacity transition (200ms)
-- Card/modal appearance: slide-up transform (300ms ease-out)
-- Loading spinner: rotate animation only
-- NO scroll-triggered animations
-- NO parallax effects
+Minimal motion only:
+- Marker drop: single bounce (300ms)
+- Filter toggle: opacity 200ms
+- Modal slide-up: translateY 300ms ease-out
+- Loading spinner: rotate only
+- NO scroll effects or parallax
 
 ## Images
 
-**No Hero Section**: This is a utility application - users need immediate access to the map and search functionality.
-
-**Iconography Only**: Use icon-based visual communication rather than photographic images. The focus is on functional clarity, not marketing imagery.
+**No hero section or marketing imagery.** This is a utility application requiring immediate functional access. Visual communication via iconography and color-coded resource types only.
 
 ## Mobile Optimization
 
-**Touch Targets**: All interactive elements minimum 48px height
-**Viewport Management**: 
-- Search bar: fixed top position
-- Map: flexible height with min-h-[400px]
-- List view: accordion-style expansion on mobile
-
-**Progressive Enhancement**:
-- Core functionality works without JavaScript (static list)
-- Map enhances with JS enabled
-- Offline cache provides degraded experience
-
-## Critical UX Patterns
-
-**One-Hand Operation**: Primary actions within thumb reach on mobile
-**Error Recovery**: Clear retry buttons with specific error messages
-**Loading Feedback**: Immediate response to all user actions
-**Information Hierarchy**: Distance and type are always visible at a glance
-**Shareable State**: URL updates with current location and filters for bookmark/share capability
+Fixed search header, flexible map height min-h-[400px], accordion list expansion. One-hand operation: primary actions in thumb zone (bottom third). Progressive enhancement: core list works without JS, map enhances experience. URL state for shareable locations/filters.
